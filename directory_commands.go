@@ -11,7 +11,6 @@ import (
 )
 
 func directorySimple(c *cli.Context) {
-	// Setup
 	params := url.Values{}
 	pathName := c.Args().First()
 	endpoint := server + "/directory"
@@ -20,46 +19,10 @@ func directorySimple(c *cli.Context) {
 	} else {
 		log.Fatal("No path name provided.")
 	}
-
-	// Request
-	if !download {
-		res := paramsToRequest(endpoint, params)
-		fmt.Println("Directory Info:", res)
-	} else {
-		// Get listing from server
-		params.Set("output", "with-URLs")
-		req := endpoint + "?" + params.Encode()
-		fmt.Println("Request: " + req)
-		fmt.Println("Downloading directory...")
-		body := getRequestToBody(req)
-		var listing []map[string]interface{}
-		err := json.Unmarshal([]byte(body), &listing)
-		if err != nil {
-			log.Fatal("Error in unmarshalling response. ", err)
-		}
-
-		// Make folder
-		dir := filepath.Base(pathName) // Ex: FASTA
-		var sub string
-		if dest != "" {
-			sub = dest + "/" + dir // Ex: $HOME/Desktop/FASTA
-		}
-		fmt.Println("Making sub-folder " + sub + "/ ...")
-		os.Mkdir(sub, os.ModePerm)
-
-		// Download file-by-file
-		for _, entry := range listing {
-			path := fmt.Sprintf("%s", entry["Path"])
-			url := fmt.Sprintf("%s", entry["URL"])
-			name := filepath.Base(path)
-			downloadFromURL(url, dir + "/" + name)
-		}
-		fmt.Println("Done downloading all files.")
-	}
+	directoryRequest(endpoint, pathName, params)
 }
 
 func directoryAtTime(c *cli.Context) {
-	// Setup
 	params := url.Values{}
 	pathName := c.Args().First()
 	endpoint := server + "/directory/at-time"
@@ -73,45 +36,51 @@ func directoryAtTime(c *cli.Context) {
 	} else {
 		log.Fatal("No input time provided.")
 	}
+	directoryRequest(endpoint, pathName, params)
+}
 
-	// Request
+func directoryRequest(endpoint string, pathName string, params url.Values) {
 	if !download {
 		res := paramsToRequest(endpoint, params)
 		fmt.Println("Directory Info:", res)
 	} else {
-		// Get listing from server
-		params.Set("output", "with-URLs")
-		req := endpoint + "?" + params.Encode()
-		fmt.Println("Request: " + req)
-		fmt.Println("Downloading directory...")
-		body := getRequestToBody(req)
-		var listing []map[string]interface{}
-		err := json.Unmarshal([]byte(body), &listing)
-		if err != nil {
-			log.Fatal("Error in unmarshalling response. ", err)
-		}
-
-		// Make folder
-		dir := filepath.Base(pathName) // Ex: FASTA
-		var sub string
-		if dest != "" {
-			sub = dest + "/" + dir // Ex: $HOME/Desktop/FASTA
-		}
-		fmt.Println("Making sub-folder " + sub + "/ ...")
-		err = os.MkdirAll(sub, os.ModePerm)
-		if err != nil {
-			log.Fatal("Error in making sub-folder. ", err)
-		}
-
-		// Download file-by-file
-		for _, entry := range listing {
-			path := fmt.Sprintf("%s", entry["Path"])
-			url := fmt.Sprintf("%s", entry["URL"])
-			name := filepath.Base(path)
-			downloadFromURL(url, dir + "/" + name)
-		}
-		fmt.Println("Done downloading all files.")
+		directoryDownload(endpoint, pathName, params)
 	}
+}
+
+func directoryDownload(endpoint string, pathName string, params url.Values) {
+	// Get listing from server
+	params.Set("output", "with-URLs")
+	req := endpoint + "?" + params.Encode()
+	fmt.Println("Request: " + req)
+	fmt.Println("Downloading directory...")
+	body := getRequestToBody(req)
+	var listing []map[string]interface{}
+	err := json.Unmarshal([]byte(body), &listing)
+	if err != nil {
+		log.Fatal("Error in unmarshalling response. ", err)
+	}
+
+	// Make folder
+	dir := filepath.Base(pathName) // Ex: FASTA
+	var sub string
+	if dest != "" {
+		sub = dest + "/" + dir // Ex: $HOME/Desktop/FASTA
+	}
+	fmt.Println("Making sub-folder " + sub + "/ ...")
+	err = os.MkdirAll(sub, os.ModePerm)
+	if err != nil {
+		log.Fatal("Error in making sub-folder. ", err)
+	}
+
+	// Download file-by-file
+	for _, entry := range listing {
+		path := fmt.Sprintf("%s", entry["Path"])
+		url := fmt.Sprintf("%s", entry["URL"])
+		name := filepath.Base(path)
+		downloadFromURL(url, dir + "/" + name)
+	}
+	fmt.Println("Done downloading all files.")
 }
 
 func directoryCompare(c *cli.Context) {

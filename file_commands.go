@@ -12,7 +12,6 @@ import (
 )
 
 func fileSimple(c *cli.Context) {
-	// Setup
 	params := url.Values{}
 	pathName := c.Args().First()
 	endpoint := server + "/file"
@@ -24,23 +23,10 @@ func fileSimple(c *cli.Context) {
 	if versionNum != "" {
 		params.Set("version-num", versionNum)
 	}
-
-	// Request
-	req := endpoint + "?" + params.Encode()
-	fmt.Println("Request: " + req)
-	if !download {
-		res := getRequestToJSON(req)
-		fmt.Println("File Info:", res)
-	} else {
-		res := getRequestToEntry(req)
-		fmt.Println("Downloading file...")
-		name := filepath.Base(res.Path)
-		downloadFromURL(res.URL, name)
-	}
+	fileRequest(endpoint, params)
 }
 
 func fileAtTime(c *cli.Context) {
-	// Setup
 	params := url.Values{}
 	pathName := c.Args().First()
 	endpoint := server + "/file/at-time"
@@ -54,8 +40,10 @@ func fileAtTime(c *cli.Context) {
 	} else {
 		log.Fatal("No input time provided.")
 	}
+	fileRequest(endpoint, params)
+}
 
-	// Request
+func fileRequest(endpoint string, params url.Values) {
 	req := endpoint + "?" + params.Encode()
 	fmt.Println("Request: " + req)
 	if !download {
@@ -80,9 +68,7 @@ func fileHistory(c *cli.Context) {
 	}
 
 	// Request
-	req := endpoint + "?" + params.Encode()
-	log.Print("Request: " + req)
-	res := getRequestToJSON(req)
+	res := paramsToRequest(endpoint, params)
 	fmt.Println("File History:", res)
 }
 
@@ -107,9 +93,9 @@ func downloadFromURL(url string, downloadName string) {
 	if err != nil {
 		log.Fatal("Error in writing local file. ", err)
 	}
+	fmt.Println("File downloaded.")
 	err = file.Close()
 	if err != nil {
 		log.Fatal("Error in closing local file. ", err)
 	}
-	fmt.Println("File downloaded.")
 }

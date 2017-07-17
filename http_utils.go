@@ -34,7 +34,6 @@ func getRequestToJSON(input string) string {
 }
 
 func getRequestToBody(input string) []byte {
-	// Get request
 	var body []byte
 	res, err := http.Get(input)
 	if err != nil {
@@ -43,8 +42,7 @@ func getRequestToBody(input string) []byte {
 	defer func() {
 		closeErr := res.Body.Close()
 		if closeErr != nil {
-			err = ComboErr("Couldn't close HTTP response body.", closeErr, err)
-			log.Fatal(err)
+			log.Fatal("Couldn't close HTTP response body. ", closeErr)
 		}
 	}()
 	body, err = ioutil.ReadAll(res.Body)

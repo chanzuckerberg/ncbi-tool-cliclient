@@ -23,100 +23,101 @@ func main() {
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	// Setup
-	app := cli.NewApp()
-
-	app.Commands = []cli.Command{
-		{ // File commands
-			Name:    "file",
-			Action: fileSimple,
-			Flags: 	[]cli.Flag{
-				cli.StringFlag{
-					Name:        "version-num",
-					Destination: &versionNum,
-				},
-				cli.BoolFlag{
-					Name:        "download",
-					Destination: &download,
-				},
-				cli.StringFlag{
-					Name:        "dest",
-					Destination: &dest,
-				},
+	fileCommands := cli.Command{
+		Name:    "file",
+		Action: fileSimple,
+		Flags: 	[]cli.Flag{
+			cli.StringFlag{
+				Name:        "version-num",
+				Destination: &versionNum,
 			},
-			Subcommands: []cli.Command{
-				{
-					Name:  "at-time",
-					Action: fileAtTime,
-					Flags: 	[]cli.Flag{
-						cli.StringFlag{
-							Name:        "input-time",
-							Destination: &inputTime,
-						},
-						cli.BoolFlag{
-							Name:        "download",
-							Destination: &download,
-						},
-						cli.StringFlag{
-							Name:        "dest",
-							Destination: &dest,
-						},
-					},
-				},
-				{
-					Name:  "history",
-					Action: fileHistory,
-				},
+			cli.BoolFlag{
+				Name:        "download",
+				Destination: &download,
+			},
+			cli.StringFlag{
+				Name:        "dest",
+				Destination: &dest,
 			},
 		},
-		{ // Directory commands
-			Name:    "directory",
-			Action: directorySimple,
-			Flags: 	[]cli.Flag{
-				cli.BoolFlag{
-					Name:        "download",
-					Destination: &download,
-				},
-				cli.StringFlag{
-					Name:        "dest",
-					Destination: &dest,
-				},
-			},
-			Subcommands: []cli.Command{
-				{
-					Name:  "at-time",
-					Action: directoryAtTime,
-					Flags: 	[]cli.Flag{
-						cli.StringFlag{
-							Name:        "input-time",
-							Destination: &inputTime,
-						},
-						cli.BoolFlag{
-							Name:        "download",
-							Destination: &download,
-						},
-						cli.StringFlag{
-							Name:        "dest",
-							Destination: &dest,
-						},
+		Subcommands: []cli.Command{
+			{
+				Name:  "at-time",
+				Action: fileAtTime,
+				Flags: 	[]cli.Flag{
+					cli.StringFlag{
+						Name:        "input-time",
+						Destination: &inputTime,
+					},
+					cli.BoolFlag{
+						Name:        "download",
+						Destination: &download,
+					},
+					cli.StringFlag{
+						Name:        "dest",
+						Destination: &dest,
 					},
 				},
-				{
-					Name:  "compare",
-					Action: directoryCompare,
-					Flags: 	[]cli.Flag{
-						cli.StringFlag{
-							Name:        "start-date",
-							Destination: &startDate,
-						},
-						cli.StringFlag{
-							Name:        "end-date",
-							Destination: &endDate,
-						},
+			},
+			{
+				Name:  "history",
+				Action: fileHistory,
+			},
+		},
+	}
+
+	directoryCommands := cli.Command{
+		Name:    "directory",
+		Action: directorySimple,
+		Flags: 	[]cli.Flag{
+			cli.BoolFlag{
+				Name:        "download",
+				Destination: &download,
+			},
+			cli.StringFlag{
+				Name:        "dest",
+				Destination: &dest,
+			},
+		},
+		Subcommands: []cli.Command{
+			{
+				Name:  "at-time",
+				Action: directoryAtTime,
+				Flags: 	[]cli.Flag{
+					cli.StringFlag{
+						Name:        "input-time",
+						Destination: &inputTime,
+					},
+					cli.BoolFlag{
+						Name:        "download",
+						Destination: &download,
+					},
+					cli.StringFlag{
+						Name:        "dest",
+						Destination: &dest,
+					},
+				},
+			},
+			{
+				Name:  "compare",
+				Action: directoryCompare,
+				Flags: 	[]cli.Flag{
+					cli.StringFlag{
+						Name:        "start-date",
+						Destination: &startDate,
+					},
+					cli.StringFlag{
+						Name:        "end-date",
+						Destination: &endDate,
 					},
 				},
 			},
 		},
 	}
+
+	app := cli.NewApp()
+	app.Name = "NCBI Tool CLI Client"
+	app.Usage = "For accessing the NCBI tool server"
+	app.Commands = []cli.Command{fileCommands, directoryCommands}
 	app.Run(os.Args)
 }
