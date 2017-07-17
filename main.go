@@ -2,10 +2,11 @@ package main
 
 import (
 	"github.com/urfave/cli"
-	"os"
 	"log"
+	"os"
 )
 
+// Entry is a file version entry
 type Entry struct {
 	Path    string
 	Version int
@@ -18,98 +19,83 @@ var versionNum, inputTime, dest, startDate, endDate string
 var download bool
 var server = "http://czbiohub-ncbi-tool-server.us-west-2.elasticbeanstalk.com"
 
+// main sets up the command line client structure.
 func main() {
 	log.SetOutput(os.Stderr)
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
+	// Set up command line flags
+	downloadFlag := cli.BoolFlag{
+		Name:        "download",
+		Destination: &download,
+	}
+	destFlag := cli.StringFlag{
+		Name:        "dest",
+		Destination: &dest,
+	}
+	inputTimeFlag := cli.StringFlag{
+		Name:        "input-time",
+		Destination: &inputTime,
+	}
+	versionNumFlag := cli.StringFlag{
+		Name:        "version-num",
+		Destination: &versionNum,
+	}
+	startDateFlag := cli.StringFlag{
+		Name:        "start-date",
+		Destination: &startDate,
+	}
+	endDateFlag := cli.StringFlag{
+		Name:        "end-date",
+		Destination: &endDate,
+	}
+	atTimeFlags := []cli.Flag{
+		inputTimeFlag,
+		downloadFlag,
+		destFlag,
+	}
+
 	fileCommands := cli.Command{
-		Name:    "file",
+		Name:   "file",
 		Action: fileSimple,
-		Flags: 	[]cli.Flag{
-			cli.StringFlag{
-				Name:        "version-num",
-				Destination: &versionNum,
-			},
-			cli.BoolFlag{
-				Name:        "download",
-				Destination: &download,
-			},
-			cli.StringFlag{
-				Name:        "dest",
-				Destination: &dest,
-			},
+		Flags: []cli.Flag{
+			versionNumFlag,
+			downloadFlag,
+			destFlag,
 		},
 		Subcommands: []cli.Command{
 			{
-				Name:  "at-time",
+				Name:   "at-time",
 				Action: fileAtTime,
-				Flags: 	[]cli.Flag{
-					cli.StringFlag{
-						Name:        "input-time",
-						Destination: &inputTime,
-					},
-					cli.BoolFlag{
-						Name:        "download",
-						Destination: &download,
-					},
-					cli.StringFlag{
-						Name:        "dest",
-						Destination: &dest,
-					},
-				},
+				Flags:  atTimeFlags,
 			},
 			{
-				Name:  "history",
+				Name:   "history",
 				Action: fileHistory,
 			},
 		},
 	}
 
 	directoryCommands := cli.Command{
-		Name:    "directory",
+		Name:   "directory",
 		Action: directorySimple,
-		Flags: 	[]cli.Flag{
-			cli.BoolFlag{
-				Name:        "download",
-				Destination: &download,
-			},
-			cli.StringFlag{
-				Name:        "dest",
-				Destination: &dest,
-			},
+		Flags: []cli.Flag{
+			downloadFlag,
+			destFlag,
 		},
 		Subcommands: []cli.Command{
 			{
-				Name:  "at-time",
+				Name:   "at-time",
 				Action: directoryAtTime,
-				Flags: 	[]cli.Flag{
-					cli.StringFlag{
-						Name:        "input-time",
-						Destination: &inputTime,
-					},
-					cli.BoolFlag{
-						Name:        "download",
-						Destination: &download,
-					},
-					cli.StringFlag{
-						Name:        "dest",
-						Destination: &dest,
-					},
-				},
+				Flags:  atTimeFlags,
 			},
 			{
-				Name:  "compare",
+				Name:   "compare",
 				Action: directoryCompare,
-				Flags: 	[]cli.Flag{
-					cli.StringFlag{
-						Name:        "start-date",
-						Destination: &startDate,
-					},
-					cli.StringFlag{
-						Name:        "end-date",
-						Destination: &endDate,
-					},
+				Flags: []cli.Flag{
+					startDateFlag,
+					endDateFlag,
 				},
 			},
 		},
@@ -119,5 +105,8 @@ func main() {
 	app.Name = "NCBI Tool CLI Client"
 	app.Usage = "For accessing the NCBI tool server"
 	app.Commands = []cli.Command{fileCommands, directoryCommands}
-	app.Run(os.Args)
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal("Error in running client. ", err)
+	}
 }

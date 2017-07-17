@@ -1,15 +1,16 @@
 package main
 
 import (
-	"github.com/urfave/cli"
-	"net/url"
-	"log"
-	"fmt"
-	"path/filepath"
 	"encoding/json"
+	"fmt"
+	"github.com/urfave/cli"
+	"log"
+	"net/url"
 	"os"
+	"path/filepath"
 )
 
+// directorySimple handles a simple directory info or download request.
 func directorySimple(c *cli.Context) {
 	params := url.Values{}
 	pathName := c.Args().First()
@@ -22,6 +23,7 @@ func directorySimple(c *cli.Context) {
 	directoryRequest(endpoint, pathName, params)
 }
 
+// directoryAtTime handles requests for a directory listing at a point in time.
 func directoryAtTime(c *cli.Context) {
 	params := url.Values{}
 	pathName := c.Args().First()
@@ -39,6 +41,7 @@ func directoryAtTime(c *cli.Context) {
 	directoryRequest(endpoint, pathName, params)
 }
 
+// directoryRequest handles directory listings or downloads to local disk.
 func directoryRequest(endpoint string, pathName string, params url.Values) {
 	if !download {
 		res := paramsToRequest(endpoint, params)
@@ -48,6 +51,7 @@ func directoryRequest(endpoint string, pathName string, params url.Values) {
 	}
 }
 
+// directoryDownload downloads a directory to local disk from the web query.
 func directoryDownload(endpoint string, pathName string, params url.Values) {
 	// Get listing from server
 	params.Set("output", "with-URLs")
@@ -56,7 +60,7 @@ func directoryDownload(endpoint string, pathName string, params url.Values) {
 	fmt.Println("Downloading directory...")
 	body := getRequestToBody(req)
 	var listing []map[string]interface{}
-	err := json.Unmarshal([]byte(body), &listing)
+	err := json.Unmarshal(body, &listing)
 	if err != nil {
 		log.Fatal("Error in unmarshalling response. ", err)
 	}
@@ -78,11 +82,13 @@ func directoryDownload(endpoint string, pathName string, params url.Values) {
 		path := fmt.Sprintf("%s", entry["Path"])
 		url := fmt.Sprintf("%s", entry["URL"])
 		name := filepath.Base(path)
-		downloadFromURL(url, dir + "/" + name)
+		downloadFromURL(url, dir+"/"+name)
 	}
 	fmt.Println("Done downloading all files.")
 }
 
+// directoryCompare handles requests for comparing directory state changes from
+// a start date to an end date.
 func directoryCompare(c *cli.Context) {
 	// Setup
 	params := url.Values{}

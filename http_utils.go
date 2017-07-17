@@ -1,15 +1,16 @@
 package main
 
 import (
-	"log"
-	"encoding/json"
-	"io/ioutil"
-	"net/http"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"net/url"
 )
 
+// getRequestToEntry takes in a GET request URL and returns an Entry.
 func getRequestToEntry(input string) Entry {
 	res := Entry{}
 	body := getRequestToBody(input)
@@ -23,6 +24,8 @@ func getRequestToEntry(input string) Entry {
 	return res
 }
 
+// getRequestToJSON takes in a GET request URL and returns the output in
+// formatted JSON.
 func getRequestToJSON(input string) string {
 	res := getRequestToBody(input)
 	var pretty bytes.Buffer
@@ -33,6 +36,8 @@ func getRequestToJSON(input string) string {
 	return string(pretty.Bytes())
 }
 
+// getRequestToBody takes in a GET request URL and returns the HTTP body in
+// bytes.
 func getRequestToBody(input string) []byte {
 	var body []byte
 	res, err := http.Get(input)
@@ -52,6 +57,8 @@ func getRequestToBody(input string) []byte {
 	return body
 }
 
+// paramsToRequest takes in the request values and returns the formatted JSON
+// response.
 func paramsToRequest(endpoint string, params url.Values) string {
 	req := endpoint + "?" + params.Encode()
 	fmt.Println("Request: " + req)

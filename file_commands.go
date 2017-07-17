@@ -1,16 +1,17 @@
 package main
 
 import (
-	"log"
-	"path/filepath"
-	"net/url"
 	"fmt"
-	"os"
-	"io"
 	"github.com/urfave/cli"
+	"io"
+	"log"
 	"net/http"
+	"net/url"
+	"os"
+	"path/filepath"
 )
 
+// fileSimple handles simple file info or download requests.
 func fileSimple(c *cli.Context) {
 	params := url.Values{}
 	pathName := c.Args().First()
@@ -26,6 +27,7 @@ func fileSimple(c *cli.Context) {
 	fileRequest(endpoint, params)
 }
 
+// fileAtTime handles requests for a file at a point in time.
 func fileAtTime(c *cli.Context) {
 	params := url.Values{}
 	pathName := c.Args().First()
@@ -43,6 +45,7 @@ func fileAtTime(c *cli.Context) {
 	fileRequest(endpoint, params)
 }
 
+// fileRequest provides file info or downloads a file based on the query.
 func fileRequest(endpoint string, params url.Values) {
 	req := endpoint + "?" + params.Encode()
 	fmt.Println("Request: " + req)
@@ -56,6 +59,7 @@ func fileRequest(endpoint string, params url.Values) {
 	}
 }
 
+// fileHistory outputs the version history of a file.
 func fileHistory(c *cli.Context) {
 	// Setup
 	params := url.Values{}
@@ -72,6 +76,7 @@ func fileHistory(c *cli.Context) {
 	fmt.Println("File History:", res)
 }
 
+// downloadFromURL downloads a file from a direct download URL to local disk.
 func downloadFromURL(url string, downloadName string) {
 	// Download the file
 	fmt.Println("Downloading " + downloadName + " ...")
