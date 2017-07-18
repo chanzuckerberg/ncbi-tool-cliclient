@@ -9,12 +9,13 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // fileSimple handles simple file info or download requests.
 func fileSimple(c *cli.Context) {
 	params := url.Values{}
-	pathName := c.Args().First()
+	pathName := getPath(c)
 	endpoint := server + "/file"
 	if pathName != "" { // Required
 		params.Set("path-name", pathName)
@@ -63,7 +64,7 @@ func fileRequest(endpoint string, params url.Values) {
 func fileHistory(c *cli.Context) {
 	// Setup
 	params := url.Values{}
-	pathName := c.Args().First()
+	pathName := getPath(c)
 	endpoint := server + "/file/history"
 	if pathName != "" { // Required
 		params.Set("path-name", pathName)
@@ -87,6 +88,7 @@ func downloadFromURL(url string, downloadName string) {
 
 	// Create local file
 	if dest != "" {
+		dest = strings.TrimSuffix(dest, "/")
 		// Ex: $HOME/Desktop/FASTA/env_nr.gz
 		downloadName = dest + "/" + downloadName
 	}

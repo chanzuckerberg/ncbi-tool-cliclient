@@ -8,6 +8,8 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"github.com/urfave/cli"
+	"strings"
 )
 
 // getRequestToEntry takes in a GET request URL and returns an Entry.
@@ -63,4 +65,11 @@ func paramsToRequest(endpoint string, params url.Values) string {
 	req := endpoint + "?" + params.Encode()
 	fmt.Println("Request: " + req)
 	return getRequestToJSON(req)
+}
+
+// getPath gets the first argument and trims any trailing slash.
+func getPath(c *cli.Context) string {
+	res := c.Args().First()
+	res = strings.TrimSuffix(res, "/")
+	return res
 }

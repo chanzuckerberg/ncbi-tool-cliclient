@@ -8,12 +8,13 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // directorySimple handles a simple directory info or download request.
 func directorySimple(c *cli.Context) {
 	params := url.Values{}
-	pathName := c.Args().First()
+	pathName := getPath(c)
 	endpoint := server + "/directory"
 	if pathName != "" { // Required
 		params.Set("path-name", pathName)
@@ -69,6 +70,7 @@ func directoryDownload(endpoint string, pathName string, params url.Values) {
 	dir := filepath.Base(pathName) // Ex: FASTA
 	var sub string
 	if dest != "" {
+		dest = strings.TrimSuffix(dest, "/")
 		sub = dest + "/" + dir // Ex: $HOME/Desktop/FASTA
 	}
 	fmt.Println("Making sub-folder " + sub + "/ ...")
@@ -92,7 +94,7 @@ func directoryDownload(endpoint string, pathName string, params url.Values) {
 func directoryCompare(c *cli.Context) {
 	// Setup
 	params := url.Values{}
-	pathName := c.Args().First()
+	pathName := getPath(c)
 	endpoint := server + "/directory/compare"
 	if pathName != "" { // Required
 		params.Set("path-name", pathName)
