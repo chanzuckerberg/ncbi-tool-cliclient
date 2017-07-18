@@ -27,9 +27,10 @@ func main() {
 
 	// Start client
 	app := cli.NewApp()
-	app.Name = "NCBI Tool CLI Client"
+	app.Name = "ncbitool"
 	app.Usage = "For accessing files and directories on the NCBI tool server."
 	app.Commands = setupCommands()
+	app.Version = "0.1"
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal("Error in running client. ", err)
