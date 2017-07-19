@@ -52,7 +52,7 @@ func fileRequest(endpoint string, params url.Values) {
 	fmt.Println("Request: " + req)
 	if !download {
 		res := getRequestToJSON(req)
-		fmt.Println("File Info:\n", res)
+		fmt.Println("File Info:", res)
 	} else {
 		res := getRequestToEntry(req)
 		name := filepath.Base(res.Path)

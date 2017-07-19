@@ -23,7 +23,7 @@ var server = "http://czbiohub-ncbi-tool-server.us-west-2.elasticbeanstalk.com"
 func main() {
 	log.SetOutput(os.Stderr)
 	log.SetOutput(os.Stdout)
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	//log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	// Start client
 	app := cli.NewApp()
