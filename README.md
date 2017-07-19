@@ -4,6 +4,7 @@
 1. Download the binary for your system:
     * `bin/darwin-amd64/ncbitool` for Mac
     * `bin/linux-amd64/ncbitool` for Linux
+    * Or build from source: `go build -o ncbitool`
 2. Move to `/usr/local` if desired. Or run with `./ncbitool command`
 3. Run `chmod u+x ncbitool` if any permissions issues.
 
@@ -42,7 +43,8 @@
 
 ## Development info
 1. `git clone https://github.com/chanzuckerberg/ncbi-tool-cliclient`
-2. `go build -o ncbitool` or `env GOOS=linux GOARCH=amd64 go build -o bin/linux-amd64/ncbitool` to cross-compile for a specific platform.
+2. `go get github.com/urfave/cli`
+3. `go build -o ncbitool` or `env GOOS=linux GOARCH=amd64 go build -o bin/linux-amd64/ncbitool` to cross-compile for a specific platform.
 
 ## Links
 * Components:
