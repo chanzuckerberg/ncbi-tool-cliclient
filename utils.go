@@ -27,15 +27,17 @@ func getRequestToEntry(input string) Entry {
 }
 
 // getRequestToJSON takes in a GET request URL and returns the output in
-// formatted JSON.
+// a formatted JSON string.
 func getRequestToJSON(input string) string {
-	res := getRequestToBody(input)
+	body := getRequestToBody(input)
 	var pretty bytes.Buffer
-	err := json.Indent(&pretty, res, "", "    ")
+	err := json.Indent(&pretty, body, "", "    ")
 	if err != nil {
 		log.Fatal("JSON parse error. ", err)
 	}
-	return string(pretty.Bytes())
+	res := string(pretty.Bytes())
+	// Workaround for ampersand being replaced with unicode
+	return strings.Replace(res, `\u0026`, "&", -1)
 }
 
 // getRequestToBody takes in a GET request URL and returns the HTTP body in
