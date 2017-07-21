@@ -69,9 +69,12 @@ func paramsToRequest(endpoint string, params url.Values) string {
 	return getRequestToJSON(req)
 }
 
-// getPath gets the first argument and trims any trailing slash.
+// getPath gets the first argument and formats the path.
 func getPath(c *cli.Context) string {
 	res := c.Args().First()
 	res = strings.TrimSuffix(res, "/")
+	if !strings.HasPrefix(res, "/") {
+		res = "/" + res
+	}
 	return res
 }
