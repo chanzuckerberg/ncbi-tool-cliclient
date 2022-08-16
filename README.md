@@ -1,5 +1,9 @@
 * NCBI-replica with version history data storage platform. Phase 1 of creating a service for accessing old versions of NCBI data. For use in the Infectious Disease platform.
 
+## Archived
+
+This repository was created for experimental purposes and is no longer maintained or used.
+
 ## Installation
 1. Download the binary for your system:
     * `bin/darwin-amd64/ncbitool` for Mac
